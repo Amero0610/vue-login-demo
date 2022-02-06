@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-06 23:39:52
+ * @LastEditTime: 2022-02-07 02:25:23
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -16,33 +16,63 @@
             <h2 class="title">Sign in</h2>
             <div class="input-field">
               <i class="fas fa-user"></i>
-              <input type="text" placeholder="Username" />
+              <input
+                type="text"
+                placeholder="Username"
+                v-model="login_username"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model="login_password"
+              />
             </div>
-            <input type="submit" value="Login" class="btn solid" />
+            <input
+              type="button"
+              value="Login"
+              class="btn solid"
+              @click="login_Btn"
+            />
           </form>
-          <form action="#" class="sign-up-form">
+          <form class="sign-up-form">
             <h2 class="title">Sign up</h2>
             <div class="input-field">
               <i class="fas fa-user"></i>
-              <input type="text" placeholder="Username" />
+              <input
+                type="text"
+                placeholder="Username"
+                v-model="signUp_username"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-envelope"></i>
-              <input type="email" placeholder="Email" />
+              <input type="email" placeholder="Email" v-model="signUp_email" />
             </div>
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model="signUP_password"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Confirm Password" />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                v-model="signUp_password_confirm"
+              />
             </div>
-            <input type="submit" class="btn" value="Sign up" />
+            <input
+              type="button"
+              class="btn"
+              value="Sign up"
+              @click="signup_Btn"
+            />
           </form>
         </div>
       </div>
@@ -52,11 +82,16 @@
           <div class="content">
             <h3>Please Login Systen</h3>
             <p>
-               Welcome to this system, <br>please enter your username and password to log in
-               <br>
-               If you do not have an account, please click the sign up button.
+              Welcome to this system, <br />please enter your username and
+              password to log in
+              <br />
+              If you do not have an account, please click the sign up button.
             </p>
-            <button class="btn transparent" id="sign-up-btn" @click="signUp">
+            <button
+              class="btn transparent"
+              id="sign-up-btn"
+              @click="jump_signUp"
+            >
               Sign up
             </button>
           </div>
@@ -68,10 +103,14 @@
             <h3>Please register</h3>
             <p>
               Please enter your username, password to register an account
-              <br>
+              <br />
               If you already have an account, please click the login button
             </p>
-            <button class="btn transparent" id="sign-in-btn" @click="signIn">
+            <button
+              class="btn transparent"
+              id="sign-in-btn"
+              @click="jump_signIn"
+            >
               Sign in
             </button>
           </div>
@@ -82,20 +121,76 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-        sign_upPic:require("../assets/loginPage/picture/register.svg"),
-        sign_inPic:require("../assets/loginPage/picture/log.svg"),
+      signUp_username: "",
+      signUP_password: "",
+      signUp_password_confirm: "",
+      signUp_email: "",
+      login_username: "",
+      login_password: "",
+
+      sign_upPic: require("../assets/loginPage/picture/register.svg"),
+      sign_inPic: require("../assets/loginPage/picture/log.svg"),
       pageStatus: false,
     };
   },
   methods: {
-    signUp: function () {
+    setUserLoginData: function (userName, passWord, email) {
+      let usernameArray = userName.split("");
+      for (let i = 0; i < usernameArray.length; i++) {
+        usernameArray[i] =
+          usernameArray[i].charCodeAt() + Math.round(Math.random() * 10);
+      }
+      const USERID = usernameArray.join("").substring(0, 6);
+      const TOKEN = email.substring(0, 4);
+      const PASSWORD = passWord;
+      this.uploadData2Database(USERID, TOKEN);
+    },
+    uploadData2Database: function (_userId, _userToken) {
+      const URL = "http://127.0.0.1:3000/data/userlogin/user";
+      axios
+        .post(
+          URL,
+          {
+            userId: _userId,
+            userToken: _userToken,
+          },
+          {
+            headers: {
+              test: "dsahjkdsa",
+            },
+          }
+        )
+        .then(function (data) {
+          console.log(data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    jump_signUp: function () {
       this.pageStatus = true;
     },
-    signIn: function () {
+    jump_signIn: function () {
       this.pageStatus = false;
+    },
+    login_Btn: function () {
+      console.log(this.login_username);
+      console.log(this.login_password);
+    },
+    signup_Btn: function () {
+      if (this.signUP_password === this.signUp_password_confirm) {
+        this.setUserLoginData(
+          this.signUp_username,
+          this.signUP_password,
+          this.signUp_email
+        );
+      } else {
+        this.$alert("Message", "Password is not true!");
+      }
     },
   },
 };
