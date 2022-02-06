@@ -1,3 +1,10 @@
+<!--
+ * @Author: Amero
+ * @Date: 2022-02-06 22:25:05
+ * @LastEditors: Amero
+ * @LastEditTime: 2022-02-06 23:41:39
+ * @FilePath: \vue-login-demo\README.md
+-->
 # vue-login-demo
 
 ## Project setup
@@ -19,6 +26,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
