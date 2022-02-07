@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-07 02:25:23
+ * @LastEditTime: 2022-02-08 02:10:53
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -12,14 +12,14 @@
     <div :class="{ container: true, 'sign-up-mode': pageStatus }">
       <div class="forms-container">
         <div class="signin-signup">
-          <form action="#" class="sign-in-form">
+          <form action="" class="sign-in-form">
             <h2 class="title">Sign in</h2>
             <div class="input-field">
               <i class="fas fa-user"></i>
               <input
                 type="text"
                 placeholder="Username"
-                v-model="login_username"
+                v-model="loginData.login_username"
               />
             </div>
             <div class="input-field">
@@ -27,15 +27,18 @@
               <input
                 type="password"
                 placeholder="Password"
-                v-model="login_password"
+                v-model="loginData.login_password"
               />
             </div>
-            <input
-              type="button"
-              value="Login"
-              class="btn solid"
+            <el-button
+              type="primary"
+              :round="false"
+              :disabled="isloginBtnDisabled"
+              class="signLoginBtn"
               @click="login_Btn"
-            />
+            >
+              Login
+            </el-button>
           </form>
           <form class="sign-up-form">
             <h2 class="title">Sign up</h2>
@@ -44,19 +47,23 @@
               <input
                 type="text"
                 placeholder="Username"
-                v-model="signUp_username"
+                v-model="singUpData.signUp_username"
               />
             </div>
             <div class="input-field">
               <i class="fas fa-envelope"></i>
-              <input type="email" placeholder="Email" v-model="signUp_email" />
+              <input
+                type="email"
+                placeholder="Email"
+                v-model="singUpData.signUp_email"
+              />
             </div>
             <div class="input-field">
               <i class="fas fa-lock"></i>
               <input
                 type="password"
                 placeholder="Password"
-                v-model="signUP_password"
+                v-model="singUpData.signUP_password"
               />
             </div>
             <div class="input-field">
@@ -64,15 +71,18 @@
               <input
                 type="password"
                 placeholder="Confirm Password"
-                v-model="signUp_password_confirm"
+                v-model="singUpData.signUp_password_confirm"
               />
             </div>
-            <input
-              type="button"
-              class="btn"
-              value="Sign up"
+            <el-button
+              type="primary"
+              :round="false"
+              class="signLoginBtn"
+              :disabled="isSignUpBtnDisabled"
               @click="signup_Btn"
-            />
+            >
+              Sign up
+            </el-button>
           </form>
         </div>
       </div>
@@ -80,7 +90,7 @@
       <div class="panels-container">
         <div class="panel left-panel">
           <div class="content">
-            <h3>Please Login Systen</h3>
+            <h3>Please Login System</h3>
             <p>
               Welcome to this system, <br />please enter your username and
               password to log in
@@ -125,12 +135,18 @@ import axios from "axios";
 export default {
   data() {
     return {
-      signUp_username: "",
-      signUP_password: "",
-      signUp_password_confirm: "",
-      signUp_email: "",
-      login_username: "",
-      login_password: "",
+      isSignUpBtnDisabled: true,
+      isloginBtnDisabled: true,
+      singUpData: {
+        signUp_username: "",
+        signUp_email: "",
+        signUP_password: "",
+        signUp_password_confirm: "",
+      },
+      loginData: {
+        login_username: "",
+        login_password: "",
+      },
 
       sign_upPic: require("../assets/loginPage/picture/register.svg"),
       sign_inPic: require("../assets/loginPage/picture/log.svg"),
@@ -138,18 +154,13 @@ export default {
     };
   },
   methods: {
-    setUserLoginData: function (userName, passWord, email) {
-      let usernameArray = userName.split("");
-      for (let i = 0; i < usernameArray.length; i++) {
-        usernameArray[i] =
-          usernameArray[i].charCodeAt() + Math.round(Math.random() * 10);
-      }
-      const USERID = usernameArray.join("").substring(0, 6);
-      const TOKEN = email.substring(0, 4);
-      const PASSWORD = passWord;
-      this.uploadData2Database(USERID, TOKEN);
+    jump_signUp: function () {
+      this.pageStatus = true;
     },
-    uploadData2Database: function (_userId, _userToken) {
+    jump_signIn: function () {
+      this.pageStatus = false;
+    },
+    api_createNewUserItem: function (_userId, _userToken) {
       const URL = "http://127.0.0.1:3000/data/userlogin/user";
       axios
         .post(
@@ -164,33 +175,91 @@ export default {
             },
           }
         )
-        .then(function (data) {
-          console.log(data);
+        .then((data) => {
+          this.$message({
+            message: "Register Successfully!",
+            type: "success",
+          });
+          console.log("then");
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          console.log("catch");
+          console.log(error.response);
+          this.$message({
+            type: "error",
+            message:
+              "Register Failed:" + error.response.data.returnValues[0].message,
+          });
         });
     },
-    jump_signUp: function () {
-      this.pageStatus = true;
+    setSignUpData: function (_username, _email, _password, _passwordConfirm) {
+      if (_password === _passwordConfirm) {
+        console.log(1);
+        let usernameArray = _username.split("");
+        let usernameArrayLength = usernameArray.length;
+        let tempId = 0;
+        for (let i = 0; i < usernameArrayLength; i++) {
+          tempId += usernameArray[i].charCodeAt();
+        }
+        let emailArray = _email.split("");
+        let passwordArray = _password.split("");
+        let tempToken = emailArray.concat(passwordArray).reverse().join("");
+        const USERID = tempId + length;
+        const TOKEN = tempToken;
+        return [USERID, TOKEN];
+      } else {
+        this.$message();
+      }
     },
-    jump_signIn: function () {
-      this.pageStatus = false;
+    judgeInputDataEmpty: function (inputData) {
+      let dataKeys = Object.keys(inputData);
+      let dataValues = Object.values(inputData);
+      let index = 0;
+      for (let i = 0; i < dataKeys.length; i++) {
+        if (dataValues[i] != "") {
+          index++;
+        }
+      }
+      return index == dataKeys.length ? true : false;
     },
     login_Btn: function () {
-      console.log(this.login_username);
-      console.log(this.login_password);
+      let inputUsername = this.loginData.login_username;
+      let inputPassword = this.loginData.login_password;
     },
     signup_Btn: function () {
-      if (this.signUP_password === this.signUp_password_confirm) {
-        this.setUserLoginData(
-          this.signUp_username,
-          this.signUP_password,
-          this.signUp_email
-        );
-      } else {
-        this.$alert("Message", "Password is not true!");
-      }
+      let inputUsername = this.singUpData.signUp_username;
+      let inputEmail = this.singUpData.signUp_email;
+      let inputPassword = this.singUpData.signUP_password;
+      let inputPassword_confirm = this.singUpData.signUp_password_confirm;
+      const RESULT_DATA = this.setSignUpData(
+        inputUsername,
+        inputEmail,
+        inputPassword,
+        inputPassword_confirm
+      );
+      this.api_createNewUserItem(RESULT_DATA[0], RESULT_DATA[1]);
+    },
+  },
+  mounted: function () {
+    // document.getElementById("mytestbut").disabled = true
+  },
+
+  watch: {
+    loginData: {
+      handler: function (newVal) {
+        this.judgeInputDataEmpty(newVal)
+          ? (this.isloginBtnDisabled = false)
+          : (this.isloginBtnDisabled = true);
+      },
+      deep: true,
+    },
+    singUpData: {
+      handler: function (newVal) {
+        this.judgeInputDataEmpty(newVal)
+          ? (this.isSignUpBtnDisabled = false)
+          : (this.isSignUpBtnDisabled = true);
+      },
+      deep: true,
     },
   },
 };
@@ -343,6 +412,21 @@ form.sign-in-form {
   margin: 10px 0;
   cursor: pointer;
   transition: 0.5s;
+}
+.sign-up-form .signLoginBtn,
+.sign-in-form .signLoginBtn {
+  font-family: "Poppins", sans-serif;
+  text-transform: uppercase;
+  width: 150px;
+  height: 49px;
+  border-radius: 49px;
+  font-weight: 600;
+  background-color: #5995fd;
+  transition: 0.5s;
+}
+.sign-up-form .signLoginBtn:hover,
+.sign-in-form .signLoginBtn:hover {
+  background-color: #4d84e2;
 }
 
 .btn:hover {
