@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-09 02:33:17
+ * @LastEditTime: 2022-02-09 02:36:48
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -208,7 +208,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      dialogVisible: true,
+      dialogVisible: false,
       usernameTipList: [
         "Start with a letter",
         "Allow 4-15 characters",
