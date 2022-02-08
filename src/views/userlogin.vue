@@ -159,6 +159,7 @@ export default {
     },
     jump_signIn: function () {
       this.pageStatus = false;
+
     },
     api_createNewUserItem: function (_userId, _userToken) {
       const URL = "http://127.0.0.1:3000/data/userlogin/user";
