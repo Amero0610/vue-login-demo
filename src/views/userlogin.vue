@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-09 02:36:48
+ * @LastEditTime: 2022-02-09 22:41:37
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -22,11 +22,12 @@
             >
               <div slot="content">
                 <p v-for="item in usernameTipList" :key="item" class="TipText">
-                  <i class="el-icon-s-opportunity"></i> {{ item }}
+                  <i class="fa fa-circle"></i>
+                  {{ item }}
                 </p>
               </div>
               <div class="input-field">
-                <i class="fas fa-user"></i>
+                <i class="fa fa-user"></i>
                 <el-input
                   type="text"
                   placeholder="Username"
@@ -42,11 +43,11 @@
             >
               <div slot="content">
                 <p v-for="item in passwordTipList" :key="item" class="TipText">
-                  <i class="el-icon-s-opportunity"></i> {{ item }}
+                  <i class="fa fa-circle"></i> {{ item }}
                 </p>
               </div>
               <div class="input-field">
-                <i class="fas fa-lock"></i>
+                <i class="fa fa-lock"></i>
                 <el-input
                   type="password"
                   placeholder="Password"
@@ -61,6 +62,7 @@
               :disabled="isloginBtnDisabled"
               class="signLoginBtn"
               @click="login_Btn"
+              v-loading.fullscreen.lock="fullscreenLoading"
             >
               Login
             </el-button>
@@ -75,11 +77,11 @@
             >
               <div slot="content">
                 <p v-for="item in usernameTipList" :key="item" class="TipText">
-                  <i class="el-icon-s-opportunity"></i> {{ item }}
+                  <i class="fa fa-circle"></i> {{ item }}
                 </p>
               </div>
               <div class="input-field">
-                <i class="fas fa-user"></i>
+                <i class="fa fa-user"></i>
                 <el-input
                   type="text"
                   placeholder="Username"
@@ -88,7 +90,7 @@
               </div>
             </el-tooltip>
             <!-- <div class="input-field">
-              <i class="fas fa-envelope"></i>
+              <i class="fa fa-envelope"></i>
               <el-input
                 type="email"
                 placeholder="Email"
@@ -103,11 +105,11 @@
             >
               <div slot="content">
                 <p v-for="item in passwordTipList" :key="item" class="TipText">
-                  <i class="el-icon-s-opportunity"></i> {{ item }}
+                  <i class="fa fa-circle"></i> {{ item }}
                 </p>
               </div>
               <div class="input-field">
-                <i class="fas fa-lock"></i>
+                <i class="fa fa-lock"></i>
 
                 <el-input
                   minlength="6"
@@ -120,7 +122,7 @@
               </div>
             </el-tooltip>
             <div class="input-field">
-              <i class="fas fa-lock"></i>
+              <i class="fa fa-lock"></i>
               <el-input
                 minlength="6"
                 maxlength="18"
@@ -202,12 +204,16 @@
 <script>
 //  Start with a letter, allow 5-16 bytes, allow alphanumeric underscore
 const USERNAMELAW = /[a-zA-Z][a-zA-Z0-9_]{4,15}/;
+const key = "AmeroL";
 // The length is between 6 and 18, and can only contain letters, numbers and underscores
 const PASSSWORDLAW = /\w{6,18}/;
+const URL_LOCAL = "http://127.0.0.1:3000/data/userlogin/user";
+const URL_REMOTE = "http://123.57.7.40:5000/data/userlogin/user";
 import axios from "axios";
 export default {
   data() {
     return {
+      fullscreenLoading: false,
       dialogVisible: false,
       usernameTipList: [
         "Start with a letter",
@@ -252,16 +258,58 @@ export default {
     jump_signIn: function () {
       this.pageStatus = false;
     },
+    verifyReturnData: function (_data, _token) {
+      let returnToken = _data.data[0].userToken;
+      if (returnToken === _token) {
+        this.$message({
+          type: "success",
+          message: "Login successful, jumping to new page",
+        });
 
-    api_checkAccountExist: function (_userId, _password) {
+        setTimeout(() => {
+          this.fullscreenLoading = true;
+        }, 1000);
+        setTimeout(() => {
+          this.fullscreenLoading = false;
+
+          window.location.href = "http://123.57.7.40:5057";
+        }, 3000);
+        return true;
+      } else {
+        this.$message({
+          type: "error",
+          message: "Password is wrong!",
+        });
+        return false;
+      }
+    },
+    api_checkAccountExist: function (_userId, _userToken) {
       //Get data from database
+      axios
+        .get(URL_LOCAL, {
+          headers: {
+            getuser: "yes",
+          },
+          params: {
+            userId: _userId,
+          },
+        })
+        .then((data) => {
+          this.verifyReturnData(data, _userToken);
+        })
+        .catch((error) => {
+          this.$message({
+            type: "error",
+            message: "Account is not exist!",
+          });
+          this.dialogVisible = true;
+        });
     },
 
     api_createNewUserItem: function (_userId, _userToken) {
-      const URL = "http://127.0.0.1:3000/data/userlogin/user";
       axios
         .post(
-          URL,
+          URL_LOCAL,
           {
             userId: _userId,
             userToken: _userToken,
@@ -277,33 +325,29 @@ export default {
             message: "Register Successfully!",
             type: "success",
           });
-          console.log("then");
         })
         .catch((error) => {
-          console.log("catch");
-          console.log(error.response);
           this.$message({
             type: "error",
             message:
-              "Register Failed:" + error.response.data.returnValues[0].message,
+              // error.response.data.returnValues[0].message,
+              "Register Failed: Username already exists",
           });
         });
     },
 
     psTk: function (str1, str2) {
-      const key = "AmeroL";
       return window.btoa(str1 + key + str2);
     },
 
-    buildToken: function (_password, _userId) {
+    buildToken: function (_password, _userName) {
       // let emailArray = _email.split("");
-      let passwordArray = _password.split("");
-      let tempToken = this.psTk(_password, _userId);
+
+      let tempToken = this.psTk(_password, _userName);
       return tempToken;
     },
 
     buildUserId: function (_username) {
-      console.log("🚀 ~ file: userlogin.vue ~ line 246 ~ _username", _username);
       let usernameArray = _username.split("");
       let tempId = 0;
       for (let i = 0; i < usernameArray.length; i++) {
@@ -359,7 +403,8 @@ export default {
       ) {
         const USERID = this.buildUserId(_username);
         const TOKEN = this.buildToken(_password, _username);
-        // this.api_createNewUserItem(USERID, TOKEN);
+
+        this.api_createNewUserItem(USERID, TOKEN);
 
         this.$notify({
           title: "Registration success",
@@ -371,7 +416,8 @@ export default {
         this.loginData.login_password = this.singUpData.signUP_password;
       }
     },
-
+    // testname
+    // 123456
     judgeInputDataEmpty: function (inputData) {
       let dataKeys = Object.keys(inputData);
       let dataValues = Object.values(inputData);
@@ -390,13 +436,20 @@ export default {
     login_Btn: function () {
       let inputUsername = this.loginData.login_username;
       let inputPassword = this.loginData.login_password;
-      this.dialogVisible = true;
-      this.clearData(this.loginData);
+      const USERID = this.buildUserId(inputUsername);
+      const TOKEN = this.buildToken(inputPassword, inputUsername);
+
+      if (
+        this.verifyUsername(inputUsername) &&
+        this.verifyPassword(inputPassword)
+      ) {
+        this.clearData(this.loginData);
+        this.api_checkAccountExist(USERID, TOKEN);
+      }
     },
 
     signup_Btn: function () {
       let inputUsername = this.singUpData.signUp_username;
-      // let inputEmail = this.singUpData.signUp_email;
       let inputPassword = this.singUpData.signUP_password;
       let inputPassword_confirm = this.singUpData.signUp_password_confirm;
       this.setSignUpData(inputUsername, inputPassword, inputPassword_confirm);
@@ -427,6 +480,7 @@ export default {
 };
 </script>
 <style>
+@import url("./../../public/font-awesome-4.7.0/css/font-awesome.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
 
 * {
