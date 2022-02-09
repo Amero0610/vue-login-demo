@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-09 22:41:37
+ * @LastEditTime: 2022-02-10 02:19:53
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -13,21 +13,23 @@
       <div class="forms-container">
         <div class="signin-signup">
           <form action="" class="sign-in-form">
-            <h2 class="title">Sign in</h2>
+            <h2 class="title">登录</h2>
             <el-tooltip
               class="item"
               effect="dark"
               placement="right"
               transition="el-zoom-in-center"
+              :hide-after="2590"
             >
               <div slot="content">
                 <p v-for="item in usernameTipList" :key="item" class="TipText">
-                  <i class="fa fa-circle"></i>
+                  <i class="fa fa-circle mytestclass"></i>
                   {{ item }}
                 </p>
               </div>
               <div class="input-field">
                 <i class="fa fa-user"></i>
+
                 <el-input
                   type="text"
                   placeholder="Username"
@@ -40,14 +42,16 @@
               effect="dark"
               placement="right"
               transition="el-zoom-in-center"
+              :hide-after="2590"
             >
               <div slot="content">
                 <p v-for="item in passwordTipList" :key="item" class="TipText">
-                  <i class="fa fa-circle"></i> {{ item }}
+                  <i class="fa fa-circle mytestclass"></i> {{ item }}
                 </p>
               </div>
               <div class="input-field">
                 <i class="fa fa-lock"></i>
+
                 <el-input
                   type="password"
                   placeholder="Password"
@@ -74,6 +78,7 @@
               effect="dark"
               placement="right"
               transition="el-zoom-in-center"
+              :hide-after="2590"
             >
               <div slot="content">
                 <p v-for="item in usernameTipList" :key="item" class="TipText">
@@ -102,6 +107,7 @@
               effect="dark"
               placement="right"
               transition="el-zoom-in-center"
+              :hide-after="2590"
             >
               <div slot="content">
                 <p v-for="item in passwordTipList" :key="item" class="TipText">
@@ -162,12 +168,14 @@
         <div class="panel left-panel">
           <div class="content">
             <h3>Please Login System</h3>
-            <p>
-              Welcome to this system, <br />please enter your username and
-              password to log in
-              <br />
-              If you do not have an account, please click the sign up button.
-            </p>
+
+            <div class="mttestTextarea">
+              <p>
+           Please enter your username and password
+                to log in.
+                <br /> If you do not have an account, please click the button below
+              </p>
+            </div>
             <button
               class="btn transparent"
               id="sign-up-btn"
@@ -182,11 +190,13 @@
         <div class="panel right-panel">
           <div class="content">
             <h3>Please register</h3>
-            <p>
-              Please enter your username, password to register an account
-              <br />
-              If you already have an account, please click the login button
-            </p>
+            <div class="mttestTextarea">
+              <p>
+                Please enter your username, password to register an account 
+                <br> If
+                you already have an account, please click the button below.
+              </p>
+            </div>
             <button
               class="btn transparent"
               id="sign-in-btn"
@@ -199,6 +209,8 @@
         </div>
       </div>
     </div>
+
+    <!-- <el-button type="primary" @click="testani">test</el-button> -->
   </div>
 </template>
 <script>
@@ -244,6 +256,15 @@ export default {
     };
   },
   methods: {
+    testani: function () {
+      let temparray = document.querySelectorAll(".mytestclass");
+      for (let i = 0; i < temparray.length; i++) {
+        temparray[i].classList.add("fa-check-square");
+        temparray[i].classList.remove("fa-circle");
+      }
+
+      console.log(temparray.length);
+    },
     clearData: function (data) {
       let keys = Object.keys(data);
 
@@ -286,7 +307,7 @@ export default {
     api_checkAccountExist: function (_userId, _userToken) {
       //Get data from database
       axios
-        .get(URL_LOCAL, {
+        .get(URL_REMOTE, {
           headers: {
             getuser: "yes",
           },
@@ -309,7 +330,7 @@ export default {
     api_createNewUserItem: function (_userId, _userToken) {
       axios
         .post(
-          URL_LOCAL,
+          URL_REMOTE,
           {
             userId: _userId,
             userToken: _userToken,
@@ -480,8 +501,15 @@ export default {
 };
 </script>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400&display=swap");
 @import url("./../../public/font-awesome-4.7.0/css/font-awesome.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
+
+.mttestTextarea {
+    /* background-color: #04befe; */
+  width: 110%;
+  text-align: center;
+}
 
 * {
   margin: 0;
@@ -690,10 +718,10 @@ form.sign-in-form {
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-around;
+
   text-align: center;
   z-index: 6;
 }
-
 .left-panel {
   pointer-events: all;
   padding: 3rem 17% 2rem 12%;
@@ -879,6 +907,8 @@ form.sign-in-form {
 }
 
 @media (max-width: 570px) {
+  .el-tooltip__popper {
+  }
   form {
     padding: 0 1.5rem;
   }

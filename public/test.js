@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-09 00:51:09
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-09 01:35:05
+ * @LastEditTime: 2022-02-09 23:22:45
  * @FilePath: \vue-login-demo\public\test.js
  */
 var testStr = "dsa11";
@@ -16,5 +16,6 @@ function testFucntion(_str,_explainStr) {
 }
  console.log( testFucntion(testStr,explainStr));
 // // MTIzQW1lcm9MOTUw
-// let tempa = Buffer.from("MTIzQW1lcm9MLGNieHp4eixkc2E=","base64").toString();
-// console.log(tempa);
+let tempa = Buffer.from("NTU1MDg1QW1lcm9MSmlhd2VpTHU=","base64").toString();
+let temparray = tempa.split('AmeroL');
+console.log(temparray);
