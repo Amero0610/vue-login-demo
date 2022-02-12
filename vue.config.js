@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-10 00:22:34
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-10 00:23:50
+ * @LastEditTime: 2022-02-10 02:25:01
  * @FilePath: \vue-login-demo\vue.config.js
  */
 module.exports = {
@@ -13,5 +13,9 @@ module.exports = {
           args[0].title= 'Login'
           return args
         })
+    },
+    css: {
+      extract: false
     }
+    
   }

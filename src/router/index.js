@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:28:46
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-06 23:00:19
+ * @LastEditTime: 2022-02-11 00:10:32
  * @FilePath: \vue-login-demo\src\router\index.js
  */
 import Vue from 'vue'
@@ -10,7 +10,7 @@ import VueRouter from 'vue-router'
 import userloginCom from '../views/userlogin.vue'
 import userloginCom_loginCom from '../views/userLogin/login.vue'
 import userloginCom_logupCom from '../views/userLogin/logup.vue'
-
+import testCom from '../views/test.vue'
 
 Vue.use(VueRouter)
 
@@ -37,6 +37,11 @@ const routes = [
         component: userloginCom_logupCom
       }
     ]
+  },
+  {
+    path:'/test',
+    name:"Test",
+    component:testCom
   }
 ]
 

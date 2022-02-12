@@ -2,7 +2,7 @@
  * @Author: Amero
  * @Date: 2022-02-06 22:49:01
  * @LastEditors: Amero
- * @LastEditTime: 2022-02-10 02:19:53
+ * @LastEditTime: 2022-02-11 00:13:33
  * @FilePath: \vue-login-demo\src\views\userlogin.vue
 -->
 <template>
@@ -13,7 +13,7 @@
       <div class="forms-container">
         <div class="signin-signup">
           <form action="" class="sign-in-form">
-            <h2 class="title">登录</h2>
+            <h2 class="title">Login</h2>
             <el-tooltip
               class="item"
               effect="dark"
@@ -257,13 +257,15 @@ export default {
   },
   methods: {
     testani: function () {
-      let temparray = document.querySelectorAll(".mytestclass");
-      for (let i = 0; i < temparray.length; i++) {
-        temparray[i].classList.add("fa-check-square");
-        temparray[i].classList.remove("fa-circle");
-      }
+      
+this.$router.push({path:'/test'})
+      // let temparray = document.querySelectorAll(".mytestclass");
+      // for (let i = 0; i < temparray.length; i++) {
+      //   temparray[i].classList.add("fa-check-square");
+      //   temparray[i].classList.remove("fa-circle");
+      // }
 
-      console.log(temparray.length);
+      // console.log(temparray.length);
     },
     clearData: function (data) {
       let keys = Object.keys(data);
