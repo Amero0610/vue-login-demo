@@ -192,7 +192,7 @@
             <h3>Please register</h3>
             <div class="mttestTextarea">
               <p>
-                Pslease enter your username, password to register an account 
+                Please enter your username, password to register an account 
                 <br> If
                 you already have an account, please click the button below.
               </p>
